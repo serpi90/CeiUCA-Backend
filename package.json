@@ -1,0 +1,19 @@
+{
+  "name": "ceiucaweb",
+  "version": "0.0.0",
+  "description": "ceiucaweb",
+  "main": "index.js",
+  "dependencies": {
+    "mv": "^2.0.3",
+    "mysql": "^2.4.3",
+    "poor-form": "^1.1.3",
+    "sequelize": "^1.7.10"
+  },
+  "devDependencies": {},
+  "author": "Julian Maestri",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serpi90/CeiUCAweb.git"
+  }
+}

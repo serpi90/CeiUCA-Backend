@@ -1,0 +1,13 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "",
+    "user": "",
+    "password": ""
+  },
+  "server": {
+    "port": 80
+  }
+}
+
