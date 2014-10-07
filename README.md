@@ -7,8 +7,9 @@ Backend for the CeiUCAweb Project
 1. Set up a mysql database.
 2. Create a `config.json` file using default.json as template.
 3. Run `npm install`
-4. Add careers with: npm createCareer.js <career name>
-5. Add subjects with: npm createSubject.js <career id> <subject name>
+5. Run `node setup.js` to initialize the database
+5. Add careers with: `node createCareer.js <career name>`
+6. Add subjects with: `node createSubject.js <career id> <subject name>`
 
 To start the server: `node index.js`.
 
