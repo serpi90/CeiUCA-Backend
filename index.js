@@ -212,10 +212,6 @@ function doGet( request, response ) {
 
 // Fetch HTTP POST Fields (multipart/form-data) from @request as an object
 // and evaluate @action(object) on success, or @onError on failure
-// @year: int
-// @turn: string [ february, july, december, special ] (case insensitive)
-// @call: int [1, 2]
-// @file: binary-data
 function fetchPostAndDo( request, action, onError ) {
     var tmpPath = '/tmp/cei-upload-' + fileCounter
       , form = pf.create( request )
@@ -302,7 +298,11 @@ function parseExamParameters( args, failure ) {
         failure( '"call" should be either 1 or 2' );
     }
 }
-
+// Fetch exam from HTTP POST and store it.
+// @year: int
+// @turn: string [ february, july, december, special, partial, recuperatory ] (case insensitive)
+// @call: int [1, 2]
+// @file: binary-data
 function postExam( response ) {
     return function ( args ) {
         var filename;
@@ -357,6 +357,9 @@ function postExam( response ) {
     };
 }
 
+// Fetch note from HTTP POST and store it.
+// @year: int
+// @file: binary-data
 function postNote( response ) {
     return function ( args ) {
         var filename;
