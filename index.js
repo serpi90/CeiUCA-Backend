@@ -149,8 +149,7 @@ function getNote( args, response ) {
             Document
                 .find( {
                     where: {
-                        id: args.id,
-                        include: [ Subject ]
+                        id: args.id
                     } } )
                 .complete( function ( error, file ) {
                     var filestream
@@ -429,6 +428,7 @@ function doPost( request, response ) {
 // Handle HTTP Request
 function handleRequest( request, response ) {
     console.log( request.connection.remoteAddress + "\t" + request.method, request.url );
+	response.setHeader( 'Access-Control-Allow-Origin', '*' );
     switch( request.method ) {
         case 'GET':
             doGet( request, response );
