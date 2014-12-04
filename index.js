@@ -265,37 +265,51 @@ function fetchPostAndDo( request, action, onError ) {
 }
 
 function parseExamParameters( args, failure ) {
-    args.subject = parseInt( args.subject );
-    args.year = parseInt( args.year );
-    if( args.year == NaN ) {
-        failure( '"year" should be an integer' );
-    }
-    switch( args.turn.toLowerCase() ) {
-        case 'february':
-            args.turn = Document.Turn.FEBRUARY;
-            break;
-        case 'july':
-            args.turn = Document.Turn.JULY;
-            break;
-        case 'december':
-            args.turn = Document.Turn.DECEMBER;
-            break;
-        case 'special':
-            args.turn = Document.Turn.SPECIAL;
-            break;
-        case 'partial':
-            args.turn = Document.Turn.PARTIAL;
-            break;
-        case 'recuperatory':
-            args.turn = Document.Turn.RECUPERATORY;
-            break;
-        default:
-            failure( '"turn" should be one of: february, july, december, special, partial or recuperatory' );
-    }
-    args.call = parseInt( args.call );
-    if( args.call != 1 && args.call != 2 ) {
-        failure( '"call" should be either 1 or 2' );
-    }
+	if( !args.file ) {
+		failure( '"file" argument missing' );
+	} else if ( !args.year ) {
+		failure( '"year" argument missing' );
+	} else if ( !args.subject ) {
+		failure( '"subject" argument missing' );
+	} else if ( !args.turn ) {
+		failure( '"turn" argument missing' );
+	} else if ( !args.call ) {
+		failure( '"call" argument missing' );
+	} else {
+		args.subject = parseInt( args.subject );
+		args.year = parseInt( args.year );
+		args.call = parseInt( args.call );
+		if( args.subject === NaN ) {
+			failure( '"subject" should be an integer' );
+		} else if( args.year == NaN ) {
+			failure( '"year" should be an integer' );
+		} else if( args.call !== 1 && args.call !== 2 ) {
+			failure( '"call" should be either 1 or 2' );
+		} else {
+			switch( args.turn.toLowerCase() ) {
+				case 'february':
+					args.turn = Document.Turn.FEBRUARY;
+					break;
+				case 'july':
+					args.turn = Document.Turn.JULY;
+					break;
+				case 'december':
+					args.turn = Document.Turn.DECEMBER;
+					break;
+				case 'special':
+					args.turn = Document.Turn.SPECIAL;
+					break;
+				case 'partial':
+					args.turn = Document.Turn.PARTIAL;
+					break;
+				case 'recuperatory':
+					args.turn = Document.Turn.RECUPERATORY;
+					break;
+				default:
+					failure( '"turn" should be one of: february, july, december, special, partial or recuperatory' );
+			}
+		}
+	}
 }
 // Fetch exam from HTTP POST and store it.
 // @year: int
@@ -304,56 +318,73 @@ function parseExamParameters( args, failure ) {
 // @file: binary-data
 function postExam( response ) {
     return function ( args ) {
-        var filename;
-        filename = 'uploads/' + args.file.sha1.substr( 0, 2 ) + '/' + args.file.sha1;
-        parseExamParameters( args, function( message ) {
-            http.badRequest( response, message );
-        } );
-        mv( args.file.path, filename, {mkdirp: true}, function(err) {
-            if( !err ) {
-                Subject
-                    .find( { where: { id: args.subject } } )
-                    .complete( function( err, subject ) {
-                        var name
-                          , ext
-                          , split
-                          ;
-                        split = args.file.name.split('.');
-                        ext = split.pop();
-                        if( split.length == 0 ) {
-                            name = args.file.name;
-                        } else {
-                            name = split.join('.');
-                        }
-                        if( !err ) {
-                            Document.create( {
-                                file: args.file.sha1,
-                                mimetype: args.file.type,
-                                name: name,
-                                ext: ext,
-                                type: Document.DocumentType.EXAM,
-                                year: args.year,
-                                turn: args.turn,
-                                call: args.call
-                            } ).complete( function( err, document ) {
-                                if( !err ) {
-                                    document.setSubject( subject );
-                                    http.ok( response, JSON.stringify( { success: true } ) );
-                                } else {
-                                    http.internalError( response, 'error storing file' );
-                                    console.log( err );
-                                }
-                            } );
-                        } else {
-                            http.badRequest( response, 'subject not found' );
-                        }
-                    } );
-            } else {
-                http.internalError( response, 'error storing file' );
-                console.log( err );
-            }
-        });
+		var failure = false;
+		parseExamParameters( args, function( message ) {
+			http.badRequest( response, message );
+			failure = true;
+		} );
+		if( !failure ) {
+			var filename;
+			filename = 'uploads/' + args.file.sha1.substr( 0, 2 ) + '/' + args.file.sha1;
+			mv( args.file.path, filename, {mkdirp: true}, function(err) {
+				if( !err ) {
+					Subject
+						.find( { where: { id: args.subject } } )
+						.complete( function( err, subject ) {
+							var name
+							  , ext
+							  , split
+							  ;
+							split = args.file.name.split('.');
+							ext = split.pop();
+							if( split.length == 0 ) {
+								name = args.file.name;
+							} else {
+								name = split.join('.');
+							}
+							if( !err ) {
+								Document.create( {
+									file: args.file.sha1,
+									mimetype: args.file.type,
+									name: name,
+									ext: ext,
+									type: Document.DocumentType.EXAM,
+									year: args.year,
+									turn: args.turn,
+									call: args.call
+								} ).complete( function( err, document ) {
+									if( !err ) {
+										document.setSubject( subject );
+										http.ok( response, JSON.stringify( { success: true } ) );
+									} else {
+										http.internalError( response, 'error storing file' );
+										console.log( err );
+									}
+								} );
+							} else {
+								http.badRequest( response, 'subject not found' );
+							}
+						} );
+				} else {
+					http.internalError( response, 'error storing file' );
+					console.log( err );
+				}
+			});
+		}
     };
+}
+
+function parseNoteParameters( args, failure ) {
+	if( !args.file ) {
+		failure( '"file" argument missing' );
+	} else if ( !args.subject ) {
+		failure( '"subject" argument missing' );
+	} else {
+		args.subject = parseInt( args.subject );
+		if( args.subject === NaN ) {
+			failure( '"subject" should be an integer' );
+		}
+	}
 }
 
 // Fetch note from HTTP POST and store it.
@@ -361,50 +392,56 @@ function postExam( response ) {
 // @file: binary-data
 function postNote( response ) {
     return function ( args ) {
-        var filename;
-        args.subject = parseInt( args.subject );
-        filename = 'uploads/' + args.file.sha1.substr( 0, 2 ) + '/' + args.file.sha1;
-        mv( args.file.path, filename, {mkdirp: true}, function(err) {
-            if( !err ) {
-                Subject
-                    .find( { where: { id: args.subject } } )
-                    .complete( function( err, subject ) {
-                        var name
-                          , ext
-                          , split
-                          ;
-                        split = args.file.name.split('.');
-                        ext = split.pop();
-                        if( split.length == 0 ) {
-                            name = args.file.name;
-                        } else {
-                            name = split.join('.');
-                        }
-                        if( !err ) {
-                            Document.create( {
-                                file: args.file.sha1,
-                                mimetype: args.file.type,
-                                name: name,
-                                ext: ext,
-                                type: Document.DocumentType.NOTE,
-                            } ).complete( function( err, document ) {
-                                if( !err ) {
-                                    document.setSubject( subject );
-                                    http.ok( response, JSON.stringify( { success: true } ) )
-                                } else {
-                                    http.internalError( response, 'error storing file' );
-                                    console.log( err );
-                                }
-                            } );
-                        } else {
-                            http.badRequest( response, 'subject not found' );
-                        }
-                    } );
-            } else {
-                http.internalError( response, 'error storing file' );
-                console.log( err );
-            }
-        });
+		var failure = false;
+		parseNoteParameters( args, function( message ) {
+			http.badRequest( response, message );
+			failure = true;
+		} );
+		if( !failure ) {
+			var filename;
+			filename = 'uploads/' + args.file.sha1.substr( 0, 2 ) + '/' + args.file.sha1;
+			mv( args.file.path, filename, {mkdirp: true}, function(err) {
+				if( !err ) {
+					Subject
+						.find( { where: { id: args.subject } } )
+						.complete( function( err, subject ) {
+							var name
+							  , ext
+							  , split
+							  ;
+							split = args.file.name.split('.');
+							ext = split.pop();
+							if( split.length == 0 ) {
+								name = args.file.name;
+							} else {
+								name = split.join('.');
+							}
+							if( !err ) {
+								Document.create( {
+									file: args.file.sha1,
+									mimetype: args.file.type,
+									name: name,
+									ext: ext,
+									type: Document.DocumentType.NOTE,
+								} ).complete( function( err, document ) {
+									if( !err ) {
+										document.setSubject( subject );
+										http.ok( response, JSON.stringify( { success: true } ) )
+									} else {
+										http.internalError( response, 'error storing file' );
+										console.log( err );
+									}
+								} );
+							} else {
+								http.badRequest( response, 'subject not found' );
+							}
+						} );
+				} else {
+					http.internalError( response, 'error storing file' );
+					console.log( err );
+				}
+			});
+		}
     };
 }
 
