@@ -26,11 +26,11 @@ function getSubjects( response ) {
 // Fetch all Exams with the indicated @subject and respond
 // @subject: Subject id (int)
 function getExams( args, response ) {
-    if( args.subject == undefined ) {
+    if( args.subject === undefined ) {
         http.badRequest( response, '"subject" missing' );
     } else {
         args.subject = parseInt( args.subject );
-        if( args.subject == NaN ) {
+        if( args.subject === NaN ) {
             http.badRequest( response, '"subject" must be a number' );
         } else {
             Document
@@ -66,11 +66,11 @@ function getExams( args, response ) {
 // Fetch the Exam with @id and respond with the file.
 // @id: Document id (int)
 function getExam( args, response ) {
-    if( args.id == undefined ) {
+    if( args.id === undefined ) {
         http.badRequest( response, '"id" missing' );
     } else {
         args.id = parseInt( args.id );
-        if( args.id == NaN ) {
+        if( args.id === NaN ) {
             http.badRequest( response, '"id" must be a number' );
         } else {
             Document
@@ -101,11 +101,11 @@ function getExam( args, response ) {
 // Fetch all Notes with the indicated @subject and respond
 // @subject: Subject id (int)
 function getNotes( args, response ) {
-    if( args.subject == undefined ) {
+    if( args.subject === undefined ) {
         http.badRequest( response, '"subject" missing' );
     } else {
         args.subject = parseInt( args.subject );
-        if( args.subject == NaN ) {
+        if( args.subject === NaN ) {
             http.badRequest( response, '"subject" must be a number' );
         } else {
             Document
@@ -139,11 +139,11 @@ function getNotes( args, response ) {
 // Fetch the Note with @id and respond with the file.
 // @id: Document id (int)
 function getNote( args, response ) {
-    if( args.id == undefined ) {
+    if( args.id === undefined ) {
         http.badRequest( response, '"id" missing' );
     } else {
         args.id = parseInt( args.id );
-        if( args.id == NaN ) {
+        if( args.id === NaN ) {
             http.badRequest( response, '"id" must be a number' );
         } else {
             Document
@@ -281,10 +281,10 @@ function parseExamParameters( args, failure ) {
 		args.call = parseInt( args.call );
 		if( args.subject === NaN ) {
 			failure( '"subject" should be an integer' );
-		} else if( args.year == NaN ) {
+		} else if( args.year === NaN ) {
 			failure( '"year" should be an integer' );
-		} else if( args.call !== 1 && args.call !== 2 ) {
-			failure( '"call" should be either 1 or 2' );
+		} else if( args.call === NaN || args.call <= 0 ) {
+			failure( '"call" should be an integer > 0' );
 		} else {
 			switch( args.turn.toLowerCase() ) {
 				case 'february':
@@ -337,7 +337,7 @@ function postExam( response ) {
 							  ;
 							split = args.file.name.split('.');
 							ext = split.pop();
-							if( split.length == 0 ) {
+							if( split.length === 0 ) {
 								name = args.file.name;
 							} else {
 								name = split.join('.');
@@ -411,7 +411,7 @@ function postNote( response ) {
 							  ;
 							split = args.file.name.split('.');
 							ext = split.pop();
-							if( split.length == 0 ) {
+							if( split.length === 0 ) {
 								name = args.file.name;
 							} else {
 								name = split.join('.');
