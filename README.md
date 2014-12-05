@@ -121,4 +121,19 @@ To start the server: `node index.js`.
 - Response:
     - success: `boolean`
 
+## Error responses
 
+### Bad Request (400)
+- Argument is smissing or not valid.
+- Invalid URL
+
+### Not Found (404)
+- File is indexed in the database, but it's not on the filesystem.
+
+### Not Supporting (405)
+- When using a method that is neither GET or POST
+
+### Internal error (500)
+- Problem found when reading from database.
+- Unhandled exception.
+- Error writing file to the filesystem

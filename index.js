@@ -87,9 +87,15 @@ function getExam( args, response ) {
                         path = 'uploads/' + file.file.substr( 0, 2 ) + '/' + file.file;
                         filename = [file.subject.name, file.year, file.turn, file.call].join('.') + '.' + file.ext;
                         filestream = fs.createReadStream( path );
-                        response.setHeader( 'Content-Disposition', 'attachment; filename=' + filename );
-                        response.writeHead( 200, file.type );
-                        filestream.pipe( response );
+			filestream
+				.on('error', function( data ) {
+					http.notFound( response, args.id + " [" + filename + "] (" + file.file + ")" );
+				} )
+				.on('readable', function( data ) {
+                        		response.setHeader( 'Content-Disposition', 'attachment; filename=' + filename );
+		                        response.writeHead( 200, file.type );
+                		        filestream.pipe( response );
+				} )
                     } else {
                         http.badRequest( response, '"id" ' + args.id + ' does not match an exam' );
                     }
@@ -163,9 +169,15 @@ function getNote( args, response ) {
                         path = 'uploads/' + file.file.substr( 0, 2 ) + '/' + file.file;
                         filename = file.name + '.' + file.ext;
                         filestream = fs.createReadStream( path );
-                        response.setHeader( 'Content-Disposition', 'attachment; filename=' + filename );
-                        response.writeHead( 200, file.type );
-                        filestream.pipe( response );
+			filestream
+				.on('error', function( data ) {
+					http.notFound( response, args.id + " [" + filename + "] (" + file.file + ")" );
+				} )
+				.on('readable', function( data ) {
+                        		response.setHeader( 'Content-Disposition', 'attachment; filename=' + filename );
+		                        response.writeHead( 200, file.type );
+                		        filestream.pipe( response );
+				} )
                     } else {
                         http.badRequest( response, '"id" ' + args.id + ' does not match an note' );
                     }

@@ -17,8 +17,13 @@ exports.ok = function ( response, message ) {
 };
 
 // Answer 405 Not Supporting
+exports.notFound = function ( response, method ) {
+    exports.respondError( response, 404, 'Not found: ' + method );
+};
+
+// Answer 405 Not Supporting
 exports.notSupporting = function ( response, method ) {
-    exports.respondError( 405, 'Not supporting: ' + method );
+    exports.respondError( response, 405, 'Not supporting: ' + method );
 };
 
 // Answer 501 Not Implemented
