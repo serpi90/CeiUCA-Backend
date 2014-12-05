@@ -90,6 +90,7 @@ function getExam( args, response ) {
 			filestream
 				.on('error', function( data ) {
 					http.notFound( response, args.id + " [" + filename + "] (" + file.file + ")" );
+					console.log( "File Not Found:" + args.id + " [" + filename + "] (" + file.file + ")" );
 				} )
 				.on('readable', function( data ) {
                         		response.setHeader( 'Content-Disposition', 'attachment; filename=' + filename );
@@ -172,6 +173,7 @@ function getNote( args, response ) {
 			filestream
 				.on('error', function( data ) {
 					http.notFound( response, args.id + " [" + filename + "] (" + file.file + ")" );
+					console.log( "File Not Found:" + args.id + " [" + filename + "] (" + file.file + ")" );
 				} )
 				.on('readable', function( data ) {
                         		response.setHeader( 'Content-Disposition', 'attachment; filename=' + filename );
